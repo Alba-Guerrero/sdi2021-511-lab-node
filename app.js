@@ -15,6 +15,8 @@ app.set('port',8081);
 //Rutas/controladores por lógica
 require("./routes/rusuarios.js")(app,swig); // (app, param1, param2, etc.)
 require("./routes/rcanciones.js")(app,swig); // (app, param1, param2, etc.)
+require("./routes/rautores.js")(app,swig); // (app, param1, param2, etc.)
+
 
 
 app.listen(app.get('port'),function (){
@@ -26,7 +28,4 @@ app.get('/promo*', function (req, res) {
 
 
 
-app.post("/cancion",function (req,res){
-    res.send("Canción agregada:"+req.body.nombre +"<br>"+ " género : " +req.body.genero +
-        "<br>"+ " precio "+req.body.precio);
-});
+
