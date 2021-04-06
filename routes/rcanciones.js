@@ -46,19 +46,34 @@ module.exports = function(app,swig,gestorBD) {
     })
 
     app.get('/cancion/:id', function (req, res) {
-        let criterio = { "_id" :  gestorBD.mongo.ObjectID(req.params.id) };
-        gestorBD.obtenerCanciones(criterio,function(canciones){
-            if ( canciones == null ){
+        let criterio = {"_id": gestorBD.mongo.ObjectID(req.params.id)};
+        gestorBD.obtenerCanciones(criterio, function (canciones) {
+            if (canciones == null) {
                 res.send("Error al recuperar la canción.");
             } else {
-                let respuesta = swig.renderFile('views/bcancion.html',
-                    {
-                        cancion : canciones[0]
-                    });
-                res.send(respuesta);
+                let criterio2= {"cancion_id": gestorBD.mongo.ObjectID(req.params.id)};
+                gestorBD.obtenerComentarios(criterio2, function (comentarios) {
+                    if (comentarios != null) {
+
+                        let respuesta = swig.renderFile('views/bcancion.html',
+                            {
+                                cancion: canciones[0],
+                                comentarios: comentarios
+                            });
+                        res.send(respuesta);
+                    } else {
+                        let respuesta = swig.renderFile('views/bcancion.html',
+                            {
+                                cancion: canciones[0]
+                            });
+                        res.send(respuesta);
+                    }
+                });
             }
+
         });
     });
+
     app.get("/canciones", function (req, res) {
         let respuesta = "";
         if (req.query.nombre != null)
