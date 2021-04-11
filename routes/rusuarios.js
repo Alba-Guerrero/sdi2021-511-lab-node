@@ -19,7 +19,7 @@ module.exports = function(app,swig,gestorBD) {
 
         gestorBD.insertarUsuario(usuario, function(id) {
             if (id == null){
-                res.send("Error al insertar el usuario");
+                res.redirect("/ientificarse");
             } else {
                 res.send('Usuario Insertado ' + id);
             }
@@ -46,7 +46,7 @@ module.exports = function(app,swig,gestorBD) {
                 res.send("No identificado: ");
             } else {
                 req.session.usuario = usuarios[0].email;
-                res.send("identificado");
+                res.redirect("/publicaciones");
             }
         });
     });

@@ -108,7 +108,7 @@ module.exports = function(app,swig,gestorBD) {
         // Conectarse
         gestorBD.insertarCancion(cancion, function (id) {
             if (id == null) {
-                res.send("Error al insertar canción");
+                res.redirect("/publicaciones");
             } else {
                 if (req.files.portada != null) {
                     var imagen = req.files.portada;
@@ -170,7 +170,7 @@ module.exports = function(app,swig,gestorBD) {
                     if( result == null){
                         res.send("Error en la modificación");
                     } else {
-                        res.send("Modificado");
+                        res.redirect("/publicaciones");
                     }
                 });
 
