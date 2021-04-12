@@ -24,11 +24,22 @@ routerAudios.use(function(req, res, next) {
     let path = require('path');
     let idCancion = path.basename(req.originalUrl, '.mp3');
     gestorBD.obtenerCanciones(
-        {"_id": mongo.ObjectID(idCancion) }, function (canciones) {
+        {_id: mongo.ObjectID(idCancion) }, function (canciones) {
             if(req.session.usuario && canciones[0].autor == req.session.usuario ){
                 next();
             } else {
-                res.redirect("/tienda");
+                let criterio = {
+                    usuario : req.session.usuario,
+                    cancionId : mongo.ObjectID(idCancion)
+                };
+
+                gestorBD.obtenerCompras(criterio ,function(compras){
+                    if (compras != null && compras.length > 0 ){
+                        next();
+                    } else {
+                        res.redirect("/tienda");
+                    }
+                });
             }
         })
 });
@@ -79,6 +90,8 @@ routerUsuarioAutor.use(function(req, res, next) {
 //Aplicar routerUsuarioAutor
 app.use("/cancion/modificar",routerUsuarioAutor);
 app.use("/cancion/eliminar",routerUsuarioAutor);
+app.use("/cancion/comprar",routerUsuarioSession);
+app.use("/compras",routerUsuarioSession);
 //Variables
 app.set('port',8081);
 app.set('db','mongodb://admin:sdi@tiendamusica-shard-00-00.mwotb.mongodb.net:27017,tiendamusica-shard-00-01.mwotb.mongodb.net:27017,tiendamusica-shard-00-02.mwotb.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=atlas-12uxxv-shard-0&authSource=admin&retryWrites=true&w=majority');
