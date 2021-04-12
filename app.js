@@ -17,7 +17,8 @@ let mongo = require('mongodb');
 let bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+let fs = require('fs');
+let https = require('https');
 let routerAudios = express.Router();
 routerAudios.use(function(req, res, next) {
     console.log("routerAudios");
@@ -107,11 +108,23 @@ require("./routes/rautores.js")(app,swig); // (app, param1, param2, etc.)
 app.get('/', function (req, res) {
     res.redirect('/tienda');
 })
-app.listen(app.get('port'),function (){
-    console.log('Servidor activo');
+https.createServer({
+    key: fs.readFileSync('certificates/alice.key'),
+    cert: fs.readFileSync('certificates/alice.crt')
+}, app).listen(app.get('port'), function() {
+    console.log("Servidor activo");
 });
+
 app.get('/promo*', function (req, res) {
     res.send('Respuesta patrón promo* ');
+});
+app.use(function (err,req,res,next){
+
+    console.log("Error producido "+err);
+    if(! res.headersSent){
+        res.status(400);
+        res.send("Recurso no disponible");
+    }
 });
 
 
