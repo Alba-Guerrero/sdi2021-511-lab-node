@@ -4,7 +4,28 @@ module.exports = {
     init : function(app, mongo) {
         this.mongo = mongo;
         this.app = app;
+    },obtenerCancionesPg : function(criterio,pg,funcionCallback){
+        this.mongo.MongoClient.connect(this.app.get('db'), function(err, db) {
+            if (err) {
+                funcionCallback(null);
+            } else {
+                let collection = db.collection('canciones');
+                collection.count(function(err, count){
+                    collection.find(criterio).skip( (pg-1)*4 ).limit( 4 )
+                        .toArray(function(err, canciones) {
+                            if (err) {
+                                funcionCallback(null);
+                            } else {
+                                funcionCallback(canciones, count);
+                            }
+                            db.close();
+                        });
+                });
+            }
+        });
     },
+
+
     obtenerCompras : function(criterio,funcionCallback){
     this.mongo.MongoClient.connect(this.app.get('db'), function(err, db) {
         if (err) {funcionCallback(null);
@@ -61,6 +82,7 @@ insertarCompra: function(compra, funcionCallback) {
             }
         });
     },
+
     obtenerUsuarios : function(criterio,funcionCallback){
     this.mongo.MongoClient.connect(this.app.get('db'), function(err, db) {
         if (err) {
