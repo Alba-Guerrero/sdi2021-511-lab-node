@@ -88,6 +88,38 @@ routerUsuarioAutor.use(function(req, res, next) {
             }
         })
 });
+
+var routerCompras = express.Router();
+routerCompras.use(function(req, res, next) {
+        console.log("routerCompras");
+        let path = require('path');
+        let id = path.basename(req.originalUrl);
+        gestorBD.obtenerCanciones(
+            {_id: mongo.ObjectID(id) },
+            function (canciones) {
+                if(req.session.usuario && canciones[0].autor == req.session.usuario ){
+                    next();
+                } else {
+                    let criterio = {
+                        usuario : req.session.usuario,
+                        cancionId : mongo.ObjectID(id)
+                    };
+
+                    gestorBD.obtenerCompras(criterio ,function(compras){
+                        if (! compras.length > 0 ){
+                            next();
+                        } else {
+                            res.redirect("/tienda");
+                        }
+                    });
+                }
+            })
+    });
+
+
+//Aplicar routerAudios
+    app.use("/audios/",routerAudios);
+
 //Aplicar routerUsuarioAutor
 app.use("/cancion/modificar",routerUsuarioAutor);
 app.use("/cancion/eliminar",routerUsuarioAutor);
