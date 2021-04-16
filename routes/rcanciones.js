@@ -32,9 +32,9 @@ module.exports = function(app,swig,gestorBD) {
             usuario: req.session.usuario,
             cancionId: cancionId
         }
-        let user = {"usuario": req.session.usuario};
-        var res=autorIgualAUsuario(cancionId,user);
-        if(res) {
+       // let user = {"usuario": req.session.usuario};
+      //  var res=autorIgualAUsuario(cancionId,user);
+       // if(res) {
             gestorBD.insertarCompra(compra, function (idCompra) {
                 if (idCompra == null) {
                     res.send(respuesta);
@@ -42,10 +42,10 @@ module.exports = function(app,swig,gestorBD) {
                     res.redirect("/compras");
                 }
             });
-        }
-        else{
-            res.send("No se puede comprar mismo usuario");
-        }
+       // }
+        //else{
+         //   res.send("No se puede comprar mismo usuario");
+      //  }
 
     });
 
@@ -124,22 +124,55 @@ module.exports = function(app,swig,gestorBD) {
                         let criterio2 = {"cancion_id": gestorBD.mongo.ObjectID(req.params.id)};
                         gestorBD.obtenerComentarios(criterio2, function (comentarios) {
                             if (comentarios != null) {
+                                let configuracion = {
+                                    url: "https://www.freeforexapi.com/api/live?pairs=EURUSD",
+                                    method: "get",
+                                    headers: {
+                                        "token": "ejemplo",
+                                    }
+                                }
+                                let rest = app.get("rest");
+                                rest(configuracion, function (error, response, body) {
+                                    console.log("cod: " + response.statusCode + " Cuerpo :" + body);
+                                    let objetoRespuesta = JSON.parse(body);
+                                    let cambioUSD = objetoRespuesta.rates.EURUSD.rate;
+                                    // nuevo campo "usd"
+                                    canciones[0].usd = cambioUSD * canciones[0].precio;
+                                    let respuesta = swig.renderFile('views/bcancion.html',
+                                        {
+                                            cancion: canciones[0],
+                                            comprada: false,
+                                            comentarios: comentarios
+                                        });
+                                    res.send(respuesta);
+                                });
 
-                                let respuesta = swig.renderFile('views/bcancion.html',
-                                    {
-                                        cancion: canciones[0],
-                                        comprada: false,
-                                        comentarios: comentarios
-                                    });
-                                res.send(respuesta);
+
                             } else {
-                                let respuesta = swig.renderFile('views/bcancion.html',
-                                    {
-                                        cancion: canciones[0],
-                                        comprada: false
-                                    });
-                                res.send(respuesta);
+                                let configuracion = {
+                                    url: "https://www.freeforexapi.com/api/live?pairs=EURUSD",
+                                    method: "get",
+                                    headers: {
+                                        "token": "ejemplo",
+                                    }
+                                }
+                                let rest = app.get("rest");
+                                rest(configuracion, function (error, response, body) {
+                                    console.log("cod: " + response.statusCode + " Cuerpo :" + body);
+                                    let objetoRespuesta = JSON.parse(body);
+                                    let cambioUSD = objetoRespuesta.rates.EURUSD.rate;
+                                    // nuevo campo "usd"
+                                    canciones[0].usd = cambioUSD * canciones[0].precio;
+                                    let respuesta = swig.renderFile('views/bcancion.html',
+                                        {
+                                            cancion: canciones[0],
+                                            comprada: false,
+                                            comentarios: comentarios
+                                        });
+                                    res.send(respuesta);
+                                });
                             }
+
 
                         });
                     }
