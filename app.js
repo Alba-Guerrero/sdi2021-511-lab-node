@@ -165,7 +165,7 @@ routerUsuarioToken.use(function(req, res, next) {
     }
 });
 // Aplicar routerUsuarioToken
-app.use('/api/cancion', routerUsuarioToken);
+//app.use('/api/cancion', routerUsuarioToken);
 //Aplicar routerUsuarioAutor
 app.use("/cancion/modificar",routerUsuarioAutor);
 app.use("/cancion/eliminar",routerUsuarioAutor);
